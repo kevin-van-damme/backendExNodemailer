@@ -2,10 +2,7 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
-import { notFound } from "./controllers/notFoundController";
-import testRoutes from "./routes/exampleRoutes";
-import { helloMiddleware } from "./middleware/exampleMiddleware";
-import mongoose from "mongoose";
+import { sendEmail } from "./utils/mail";
 
 // Variables
 const app = express();
@@ -16,17 +13,33 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api", helloMiddleware, testRoutes);
-app.all("*", notFound);
+app.get("/", async (req, res) => {
+  try {
+    res.render("index");
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-// Database connection
-try {
-  await mongoose.connect(process.env.MONGO_URI!);
-  console.log("Database connection OK");
-} catch (err) {
-  console.error(err);
-  process.exit(1);
-}
+app.post("/mail", async (req, res) => {
+  try {
+    const { lname, fname, datePicker, hairColor, length, gender, message } =
+      req.body;
+    await sendEmail({
+      lname: lname,
+      fname: fname,
+      datePicker: datePicker,
+      hairColor: hairColor,
+      length: length,
+      gender: gender,
+      message: message,
+    });
+    res.status(200).json({ message: "Email sent!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+});
 
 // Server Listening
 app.listen(PORT, () => {
