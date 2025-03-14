@@ -1,11 +1,6 @@
 import { formData } from "../types/mailTypes";
+import * as nodemailer from "nodemailer";
 import { SMTP_HOST, SMTP_USER, SMTP_PASS } from "../utils/envs";
-import nodemailer from "nodemailer";
-
-let testAccount = await nodemailer.createTestAccount();
-const testHost = "smtp.ethereal.email";
-
-const {} = nodemailer.createTestAccount;
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
